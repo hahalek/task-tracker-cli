@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 
 data_filepath = r'tasks_database.json'
+id_filepath = r'id.txt'
 
 class Task():
     def __init__(self, description: str):
@@ -33,6 +34,17 @@ class Task():
 
 
 class Tracker():
+    def __init__(self):
+        init_dict = {
+            'todo': [],
+            'in_progress': [],
+            'done': []
+        }
+        with open(data_filepath, 'w') as f:
+            f.write(json.dumps(init_dict))
+        with open(id_filepath, 'w') as f:
+            f.write('0')
+
     def add(self, description: str):
         # Create new task with todo status and ID, add createdAt and updatedAt timestamps
         new_task = Task(description)
@@ -69,6 +81,22 @@ class Tracker():
         with open(data_filepath, 'w') as f:
             f.write(json.dumps(data_dict))
 
+    def delete(self, id: int):
+        with open(data_filepath, 'r') as f:
+            data_json = f.read()
+        
+        data_dict = json.loads(data_json)
+        for task in data_dict['todo']:
+            if task['id'] == id:
+                data_dict['todo'].remove(task)
+        for task in data_dict['in_progress']:
+            if task['id'] == id:
+                data_dict['in_progress'].remove(task)
+        for task in data_dict['done']:
+            if task['id'] == id:
+                data_dict['done'].remove(task)
+        with open(data_filepath, 'w') as f:
+            f.write(json.dumps(data_dict))
         
 
 
@@ -80,4 +108,4 @@ tracker.add('Pocwiczyc')
 #     "todo": [],
 #     "in_progress": [],
 #     "done": []
-# }Pocwiczyc
+# }
