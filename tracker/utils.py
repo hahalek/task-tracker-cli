@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 
 with open('config.json', 'r') as f:
@@ -33,7 +34,11 @@ def find_task_by_id(id: int):
         if task['id'] == id:
             return task
 
-def get_todo_list():
+def get_task_list(key: str):
     with open(TASKS_FILEPATH, 'r') as f:
         data_dict = json.loads(f.read())
-    return data_dict['todo']
+    return data_dict[key]
+
+
+def get_updated_time():
+    return datetime.now().strftime("%d-%m-%Y, %H:%M:%S")

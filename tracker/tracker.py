@@ -1,7 +1,7 @@
 import cmd
 from datetime import datetime
 import json
-from .utils import get_id, save_id
+from .utils import get_id, save_id, get_updated_time
 
 with open('config.json', 'r') as f:
     config = json.loads(f.read())
@@ -9,14 +9,14 @@ with open('config.json', 'r') as f:
 TASKS_FILEPATH = config['TASKS_FILEPATH']
 
 class Task():
-    def __init__(self, data: str | dict):
+    def __init__(self, data: str | dict, status: str = 'todo'):
         if type(data) == str:
-            timestamp = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+            timestamp = get_updated_time()
             new_id = get_id() + 1
 
             self.id = new_id
             self.description = data
-            self.status = 'todo'
+            self.status = status
             self.created_at = timestamp
             self.updated_at = timestamp
 
@@ -61,7 +61,6 @@ class Tracker():
             data = json.loads(f.read())
         for key in data.keys():
             data[key] = [Task(x) for x in data[key]]
-        print(data)
         return data
 
 
@@ -70,12 +69,25 @@ class Tracker():
             tasks[key] = [task.to_dict() for task in tasks[key]]
         with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(tasks))
+    
+
+    def find_task(self, tasks, by: str, value):
+        if by == 'id':
+            for key in tasks.keys():
+                for task in tasks[key]:
+                    if task.id == value:
+                        return task
+        elif by == 'description':
+            for key in tasks.keys():
+                for task in tasks[key]:
+                    if task.description == value:
+                        return task
 
 
 
-    def add(self, description: str):
+    def add(self, description: str, status: str = 'todo'):
         # Create new task with todo status and ID, add createdAt and updatedAt timestamps
-        new_task = Task(description)
+        new_task = Task(description, status)
         tasks = self.get_tasks()
         tasks['todo'].append(new_task)
         self.save_tasks(tasks)
@@ -84,50 +96,45 @@ class Tracker():
 
     def update(self, id: int, new_description: str):
         #if description or id of the task is given
-        update_time = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
         tasks = self.get_tasks()
-        with open(TASKS_FILEPATH, 'r') as f:
-            data_json = f.read()
-        
-        data_dict = json.loads(data_json)
-        for task in data_dict['todo']:
-            if task['id'] == id:
-                task['description'] = new_description
-                task['updated_at'] = update_time
-        for task in data_dict['in_progress']:
-            if task['id'] == id:
-                task['description'] = new_description
-                task['updated_at'] = update_time
-        for task in data_dict['done']:
-            if task['id'] == id:
-                task['description'] = new_description
-                task['updated_at'] = update_time
-        with open(TASKS_FILEPATH, 'w') as f:
-            f.write(json.dumps(data_dict))
+        for key in tasks.keys():
+                for task in tasks[key]:
+                    if task.id == id:
+                        task.description = new_description
+                        task.updated_at = get_updated_time()
+        self.save_tasks(tasks)
+
 
     def delete(self, id: int):
-        with open(TASKS_FILEPATH, 'r') as f:
-            data_json = f.read()
-        
-        data_dict = json.loads(data_json)
-        for task in data_dict['todo']:
-            if task['id'] == id:
-                data_dict['todo'].remove(task)
-        for task in data_dict['in_progress']:
-            if task['id'] == id:
-                data_dict['in_progress'].remove(task)
-        for task in data_dict['done']:
-            if task['id'] == id:
-                data_dict['done'].remove(task)
-        with open(TASKS_FILEPATH, 'w') as f:
-            f.write(json.dumps(data_dict))
-        
+        tasks = self.get_tasks()
+        for key in tasks.keys():
+            for task in tasks[key]:
+                if task.id == id:
+                    tasks[key].remove(task)
+        self.save_tasks(tasks)
+    
+
+    def mark(self, id: int, new_status: str):
+        tasks = self.get_tasks()
+        for key in tasks.keys():
+            for task in tasks[key]:
+                if task.id == id:
+                    target_task = task
+                    tasks[key].remove(task)
+                    break
+        target_task.status = new_status
+        target_task.updated_at = get_updated_time()
+        tasks[new_status].append(target_task)
+        self.save_tasks(tasks)
+    
+    def list(self, status: str):
+        tasks = self.get_tasks()
+        print(f'{status} list:')
+        for task in tasks[status]:
+            print(f'   {task.id:<5} {task.description:<40} ({task.created_at})')
+    
 
 
-tracker = Tracker()
-tracker.add('One')
-tracker.add('Two')
-tracker.get_tasks()
 
 
 # {
