@@ -1,28 +1,32 @@
 import cmd
 from datetime import datetime
 import json
+import globals
 
-data_filepath = r'tasks_database.json'
-id_filepath = r'id.txt'
+TASKS_FILEPATH = globals.TASKS_FILEPATH
 
 class Task():
-    def __init__(self, description: str):
-        with open('id.txt', 'r') as f:
-            id = int(f.read())
-            new_id = id + 1
-        
-        timestamp = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+    def __init__(self, data: str | dict):
+        if type(data) == str:
+            timestamp = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+            new_id = globals.id +1
 
-        self.id = new_id
-        self.description = description
-        self.status = 'todo'
-        self.created_at = timestamp
-        self.updated_at = timestamp
+            self.id = new_id
+            self.description = data
+            self.status = 'todo'
+            self.created_at = timestamp
+            self.updated_at = timestamp
 
-        with open('id.txt', 'w') as f:
-            f.write(str(new_id))
+            globals.id = new_id
+        elif type(data) == dict:
+            self.id = data['id']
+            self.description = data['description']
+            self.status = data['status']
+            self.created_at = data['created_at']
+            self.updated_at = data['updated_at']
 
-    def task_to_dict(self):
+
+    def to_dict(self):
         task_dict = {
             "id": self.id,
             "description": self.description,
@@ -33,36 +37,45 @@ class Task():
         return task_dict
 
 
+
+
 class Tracker():
     def __init__(self):
+        '''Initialize json with all tasks to default skelethon, and set ID to 0'''
         init_dict = {
             'todo': [],
             'in_progress': [],
             'done': []
         }
-        with open(data_filepath, 'w') as f:
+        with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(init_dict))
-        with open(id_filepath, 'w') as f:
-            f.write('0')
+        globals.id = 0
+
+    def read_data_from_json():
+        with open(TASKS_FILEPATH, 'r') as f:
+            data_json = f.read()
+        data_dict = json.loads(data_json)
+
 
     def add(self, description: str):
         # Create new task with todo status and ID, add createdAt and updatedAt timestamps
         new_task = Task(description)
-        with open(data_filepath, 'r') as f:
+        with open(TASKS_FILEPATH, 'r') as f:
             data_json = f.read()
         
         data_dict = json.loads(data_json)
         todo_list = data_dict['todo']
-        new_task_dict = new_task.task_to_dict()
+        new_task_dict = new_task.to_dict()
         todo_list.append(new_task_dict)
-        with open(data_filepath, 'w') as f:
+        with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(data_dict))
+        #TODO tasks: dict[str, list[Task]] = TaskDB(**data_dict)
         
 
     def update(self, id: int, new_description: str):
         #if description or id of the task is given
         update_time = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
-        with open(data_filepath, 'r') as f:
+        with open(TASKS_FILEPATH, 'r') as f:
             data_json = f.read()
         
         data_dict = json.loads(data_json)
@@ -78,11 +91,11 @@ class Tracker():
             if task['id'] == id:
                 task['description'] = new_description
                 task['updated_at'] = update_time
-        with open(data_filepath, 'w') as f:
+        with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(data_dict))
 
     def delete(self, id: int):
-        with open(data_filepath, 'r') as f:
+        with open(TASKS_FILEPATH, 'r') as f:
             data_json = f.read()
         
         data_dict = json.loads(data_json)
@@ -95,7 +108,7 @@ class Tracker():
         for task in data_dict['done']:
             if task['id'] == id:
                 data_dict['done'].remove(task)
-        with open(data_filepath, 'w') as f:
+        with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(data_dict))
         
 
@@ -105,6 +118,7 @@ tracker.add('Pocwiczyc')
 
 
 # {
+#     "__id": 4
 #     "todo": [],
 #     "in_progress": [],
 #     "done": []
