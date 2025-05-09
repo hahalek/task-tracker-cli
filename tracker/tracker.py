@@ -89,7 +89,7 @@ class Tracker():
         # Create new task with todo status and ID, add createdAt and updatedAt timestamps
         new_task = Task(description, status)
         tasks = self.get_tasks()
-        tasks['todo'].append(new_task)
+        tasks[status].append(new_task)
         self.save_tasks(tasks)
         #TODO tasks: dict[str, list[Task]] = TaskDB(**data_dict)
         
