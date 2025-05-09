@@ -1,8 +1,25 @@
 import json
-import globals
 
-TASKS_FILEPATH = globals.TASKS_FILEPATH
 
+with open('config.json', 'r') as f:
+    config = json.loads(f.read())
+
+TASKS_FILEPATH = config['TASKS_FILEPATH']
+
+
+def get_id():
+    with open('config.json', 'r') as f:
+        config = json.loads(f.read())
+    return config['id']
+
+def save_id(new_id: int):
+    with open('config.json', 'r') as f:
+        config = json.loads(f.read())
+    config['id'] = new_id
+    with open('config.json', 'w') as f:
+        f.write(json.dumps(config))
+
+    
 def find_task_by_id(id: int):
     with open(TASKS_FILEPATH, 'r') as f:
         data_dict = json.loads(f.read())

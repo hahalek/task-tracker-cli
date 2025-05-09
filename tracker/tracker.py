@@ -1,15 +1,18 @@
 import cmd
 from datetime import datetime
 import json
-import globals
+from .utils import get_id, save_id
 
-TASKS_FILEPATH = globals.TASKS_FILEPATH
+with open('config.json', 'r') as f:
+    config = json.loads(f.read())
+
+TASKS_FILEPATH = config['TASKS_FILEPATH']
 
 class Task():
     def __init__(self, data: str | dict):
         if type(data) == str:
             timestamp = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
-            new_id = globals.id +1
+            new_id = get_id() + 1
 
             self.id = new_id
             self.description = data
@@ -17,7 +20,8 @@ class Task():
             self.created_at = timestamp
             self.updated_at = timestamp
 
-            globals.id = new_id
+            save_id(new_id)
+            
         elif type(data) == dict:
             self.id = data['id']
             self.description = data['description']
@@ -49,32 +53,39 @@ class Tracker():
         }
         with open(TASKS_FILEPATH, 'w') as f:
             f.write(json.dumps(init_dict))
-        globals.id = 0
+        save_id(0)
 
-    def read_data_from_json():
+
+    def get_tasks(self):
         with open(TASKS_FILEPATH, 'r') as f:
-            data_json = f.read()
-        data_dict = json.loads(data_json)
+            data = json.loads(f.read())
+        for key in data.keys():
+            data[key] = [Task(x) for x in data[key]]
+        print(data)
+        return data
+
+
+    def save_tasks(self, tasks):
+        for key in tasks.keys():
+            tasks[key] = [task.to_dict() for task in tasks[key]]
+        with open(TASKS_FILEPATH, 'w') as f:
+            f.write(json.dumps(tasks))
+
 
 
     def add(self, description: str):
         # Create new task with todo status and ID, add createdAt and updatedAt timestamps
         new_task = Task(description)
-        with open(TASKS_FILEPATH, 'r') as f:
-            data_json = f.read()
-        
-        data_dict = json.loads(data_json)
-        todo_list = data_dict['todo']
-        new_task_dict = new_task.to_dict()
-        todo_list.append(new_task_dict)
-        with open(TASKS_FILEPATH, 'w') as f:
-            f.write(json.dumps(data_dict))
+        tasks = self.get_tasks()
+        tasks['todo'].append(new_task)
+        self.save_tasks(tasks)
         #TODO tasks: dict[str, list[Task]] = TaskDB(**data_dict)
         
 
     def update(self, id: int, new_description: str):
         #if description or id of the task is given
         update_time = datetime.now().strftime("%d-%m-%Y, %H:%M:%S")
+        tasks = self.get_tasks()
         with open(TASKS_FILEPATH, 'r') as f:
             data_json = f.read()
         
@@ -114,7 +125,9 @@ class Tracker():
 
 
 tracker = Tracker()
-tracker.add('Pocwiczyc')
+tracker.add('One')
+tracker.add('Two')
+tracker.get_tasks()
 
 
 # {
