@@ -2,6 +2,7 @@ import cmd
 from datetime import datetime
 import json
 from .utils import get_id, save_id, get_updated_time
+import argparse
 
 with open('config.json', 'r') as f:
     config = json.loads(f.read())
