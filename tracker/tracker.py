@@ -1,7 +1,7 @@
 import cmd
 from datetime import datetime
 import json
-from .utils import get_id, save_id, get_updated_time
+from utils import get_id, save_id, get_updated_time
 
 with open('config.json', 'r') as f:
     config = json.loads(f.read())
@@ -44,16 +44,17 @@ class Task():
 
 
 class Tracker():
-    def __init__(self):
-        '''Initialize json with all tasks to default skelethon, and set ID to 0'''
-        init_dict = {
-            'todo': [],
-            'in_progress': [],
-            'done': []
-        }
-        with open(TASKS_FILEPATH, 'w') as f:
-            f.write(json.dumps(init_dict))
-        save_id(0)
+    def __init__(self, reset: bool = False):
+        if reset:
+            '''Initialize json with all tasks to default skelethon, and set ID to 0'''
+            init_dict = {
+                'todo': [],
+                'in_progress': [],
+                'done': []
+            }
+            with open(TASKS_FILEPATH, 'w') as f:
+                f.write(json.dumps(init_dict))
+            save_id(0)
 
 
     def get_tasks(self):
