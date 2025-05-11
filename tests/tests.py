@@ -1,13 +1,14 @@
 import pytest
-from tracker.tracker import *
+from tracker.model import *
 from time import sleep
 import json
 from tracker.utils import *
 
-with open('config.json', 'r') as f:
-    config = json.loads(f.read())
 
-TASKS_FILEPATH = config['TASKS_FILEPATH']
+with open('./tracker/config.json', 'r') as f:
+    config_file = json.loads(f.read())
+
+TASKS_FILEPATH = config_file['TASKS_FILEPATH']
 
 
 def test_task_object():
@@ -41,7 +42,7 @@ def test_new_task_has_id_increased_by_one():
     assert result == 1
 
 def test_add_new_task():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     desc = 'Zrobic pranie'
     tracker.add(desc)
     result = find_task_by_id(1)['description']
@@ -49,7 +50,7 @@ def test_add_new_task():
 
 
 def test_delete_task():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     tracker.add('Python')
     tracker.add('SQL')
     tracker.add('Java')
@@ -62,7 +63,7 @@ def test_delete_task():
 
 
 def test_update_task():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     tracker.add('Go on a walk')
     update_time_1 = find_task_by_id(1)['updated_at']
     sleep(1)
@@ -73,7 +74,7 @@ def test_update_task():
 
 
 def test_mark_task_in_progress():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     tracker.add('Go shopping')
     sleep(1)
     tracker.mark(1, 'in_progress')
@@ -82,7 +83,7 @@ def test_mark_task_in_progress():
     assert len(get_task_list('in_progress')) == 1
 
 def test_mark_task_done():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     tracker.add('Go shopping')
     sleep(1)
     tracker.mark(1, 'done')
@@ -91,7 +92,7 @@ def test_mark_task_done():
     assert len(get_task_list('done')) == 1
 
 def test_list_todo_list():
-    tracker = Tracker()
+    tracker = Tracker(reset=True)
     tracker.add('Feed shrimps')
     tracker.add('Do laundry')
     tracker.add('Do CLI project', 'in_progress')
