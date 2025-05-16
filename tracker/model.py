@@ -1,8 +1,5 @@
-import cmd
-from datetime import datetime
 import json
-from utils import get_id, save_id, get_updated_time
-import argparse
+from .utils import get_id, save_id, get_updated_time
 
 
 with open('./tracker/config.json', 'r') as f:

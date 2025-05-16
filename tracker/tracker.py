@@ -1,5 +1,5 @@
 import argparse
-from model import *
+from .model import *
 
 def main(command_line=None):
 
