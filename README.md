@@ -6,15 +6,7 @@ Project idea from: https://roadmap.sh/projects/task-tracker
 # Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
 
 # Clone the repository
-git clone git@github.com:hahalek/task-tracker-cli.git
-
-# Navigate to the project directory
-cd task-tracker-cli
-
-# Check if pip is installed
-
-# Install the package
-pip install --user .
+pip install git+https://github.com/hahalek/task-tracker-cli
 
 ```
   
