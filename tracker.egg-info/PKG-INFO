@@ -1,8 +1,0 @@
-Metadata-Version: 2.4
-Name: tracker
-Version: 0.1.0
-Summary: Simple CLI tool for managing a todo list.
-Requires-Python: >=3.13
-Description-Content-Type: text/markdown
-Requires-Dist: platformdirs>=4.3.8
-Requires-Dist: rich>=14.0.0
