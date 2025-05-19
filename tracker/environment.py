@@ -1,7 +1,7 @@
 import os.path
 from platformdirs import user_data_dir
 appname = 'tracker'
-appauthor = 'hahalek'
+appauthor = 'task-tracker-cli'
 
 user_dir = user_data_dir(appname, appauthor)
 
