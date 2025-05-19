@@ -5,13 +5,19 @@ Project idea from: https://roadmap.sh/projects/task-tracker
 ```shell
 # Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
 
-# Clone the repository
+# Clone the repository and install
 pip install git+https://github.com/hahalek/task-tracker-cli
 
 ```
   
 ## Uninstal  
-Uninstall on Windows with "py -m pip uninstall tracker". On Unix/macOS with "python -m pip uninstall tracker".  
+```shell
+# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
+
+# Uninstall
+pip uninstall tracker
+
+```
   
 ## Description  
 This is a simple Command Line Interface tool for task tracking. You can view your tasks in easly readible table, add new tasks, mark thier status as in-progress or done, update task description, delete a single task or reset whole todo list.  
