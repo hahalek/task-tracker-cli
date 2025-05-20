@@ -45,9 +45,9 @@ class Task():
         if self.status == "done":
             color = "bright_black"
         else:
-            if delta.days > 2:
+            if delta.days >= 2:
                 color = "bright_green"
-            elif delta.days > 1:
+            elif delta.days >= 1:
                 color = "bright_white"
         return color
 
